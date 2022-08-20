@@ -1,14 +1,27 @@
-import PropTypes from "prop-types";
 import { ContactListItem } from "components/ContactListItem/ContactListItem";
+import { useSelector } from "react-redux";
+import { getContacts, getFilter } from "redux/contactsSlice";
 
-export const ContactList = ({contacts, onDelete}) => {
-    const isContactsEmpty = contacts.length > 0;
+
+export const ContactList = () => {
+    const allContacts = useSelector(getContacts);
+    const filter = useSelector(getFilter);
+   
+    const getFiltredContacts = () => {
+        const normalizedFilter = filter.toLowerCase();
+        return allContacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
+    };
+
+    const filteredContacts = getFiltredContacts();
+
+    const isContactsNotEmpty = filteredContacts.length > 0;
+    
     return (
-    isContactsEmpty ? 
+    isContactsNotEmpty ? 
     <ul>
-        { contacts.map( contact => { 
+        { filteredContacts.map( contact => { 
         const {id, name, number} = contact;
-        return <ContactListItem key={id} id={id} name={name} number={number} onDelete={onDelete}/>;})
+        return <ContactListItem key={id} id={id} name={name} number={number}/>;})
         }
     </ul>
     : <p>You dont have any contacts or matches</p>
@@ -17,11 +30,11 @@ export const ContactList = ({contacts, onDelete}) => {
 
 };
 
-ContactList.propTypes = {
-    contacts: PropTypes.arrayOf(PropTypes.exact({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        number: PropTypes.node.isRequired,
-    })),
+// ContactList.propTypes = {
+//     contacts: PropTypes.arrayOf(PropTypes.exact({
+//         id: PropTypes.string.isRequired,
+//         name: PropTypes.string.isRequired,
+//         number: PropTypes.node.isRequired,
+//     })),
 
-}
+// }
